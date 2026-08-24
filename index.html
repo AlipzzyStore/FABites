@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA Bites</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff0f5',
+                            100: '#ffe4e1',
+                            200: '#fbcfe8',
+                            300: '#f472b6',
+                            400: '#e879f9',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Quicksand', 'Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Quicksand for soft, cute & professional typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome for SVG Icons (Strictly NO Emojis used) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff0f5;
+            color: #374151;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbcfe8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f472b6;
+        }
+
+        /* Smooth Progress Bar animation */
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .animate-progress {
+            animation: fillProgress 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Soft Floating Animation without glow */
+        @keyframes floatSoft {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .animate-float {
+            animation: floatSoft 3s ease-in-out infinite;
+        }
+
+        /* Subtle pulse for badge icon */
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .animate-heartbeat {
+            animation: heartPulse 1.8s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#fff0f5] min-h-screen text-slate-700 antialiased selection:bg-pink-200 selection:text-pink-800">
+
+    <!-- CUTE 5-SECOND INTRO LOADING OVERLAY -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#fff0f5] transition-opacity duration-700 px-4">
+        <div class="flex flex-col items-center max-w-sm w-full text-center">
+            <!-- Animated Rounded Logo Wrapper -->
+            <div class="relative mb-6">
+                <div class="w-28 h-28 md:w-32 md:h-32 rounded-full p-1.5 bg-gradient-to-tr from-pink-300 via-pink-200 to-pink-400 shadow-md animate-float">
+                    <img src="https://files.catbox.moe/tyjzst.jpeg" 
+                         alt="FA Bites Logo" 
+                         class="w-full h-full object-cover rounded-full border-2 border-white"
+                         onerror="this.src='https://placehold.co/200x200/ffe4e1/db2777?text=FA+Bites'">
+                </div>
+                <div class="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-sm text-pink-500 animate-heartbeat">
+                    <i class="fa-solid fa-heart text-base"></i>
+                </div>
+            </div>
+
+            <!-- Loading Title & Description -->
+            <h1 class="text-2xl font-bold text-pink-700 tracking-wide mb-1">FA Bites</h1>
+            <p class="text-xs text-pink-500 font-medium mb-6 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-cookie-bite"></i>
+                <span>Wait loading cuy...</span>
+            </p>
+
+            <!-- Progress Bar Container -->
+            <div class="w-full bg-pink-100 rounded-full h-3 p-0.5 border border-pink-200 shadow-inner overflow-hidden mb-3">
+                <div id="progress-bar" class="bg-pink-400 h-full rounded-full animate-progress"></div>
+            </div>
+
+            <!-- Percentage Counter -->
+            <div class="flex items-center justify-between w-full text-xs font-semibold text-pink-600 px-1">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-[#db2777] fa-sparkles"></i> Loading</span>
+                <span id="loading-counter">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION CONTAINER -->
+    <div id="app-content" class="opacity-0 transition-opacity duration-700 min-h-screen flex flex-col pb-20 md:pb-0">
+        
+        <!-- HEADER / LIQUID NAVIGATION BAR -->
+        <header class="sticky top-4 z-40 max-w-5xl mx-auto px-4 w-full transition-all duration-300">
+            <div class="bg-white/80 backdrop-blur-xl border border-pink-100/80 rounded-full p-2 pl-4 shadow-sm shadow-pink-200/30 flex items-center justify-between">
+                
+                <!-- Brand & Rounded Logo -->
+                <a href="#" class="flex items-center gap-2.5 group">
+                    <div class="relative">
+                        <img src="https://files.catbox.moe/tyjzst.jpeg" 
+                             alt="FA Bites Logo" 
+                             class="w-10 h-10 rounded-full object-cover border-2 border-pink-300 group-hover:scale-105 transition-all duration-300 shadow-sm"
+                             onerror="this.src='https://placehold.co/100x100/ffe4e1/db2777?text=FAB'">
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-pink-700 tracking-tight block leading-none group-hover:text-pink-600 transition-colors">FA Bites</span>
+                        <span class="text-[9px] text-pink-400 font-semibold tracking-wider uppercase flex items-center gap-1 mt-0.5">
+                            <i class="fa-solid fa-sparkles"></i> Toko kecil kecilan
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Desktop Liquid Navigation Menu -->
+                <nav class="hidden md:flex items-center relative bg-pink-100/60 p-1 rounded-full border border-pink-200/50" id="liquid-nav-container">
+                    <!-- Liquid Indicator Pill (Slides smoothly) -->
+                    <div id="liquid-pill" class="absolute top-1 bottom-1 bg-pink-500 rounded-full transition-all duration-300 ease-out shadow-sm pointer-events-none"></div>
+
+                    <a href="#hero" class="liquid-nav-item relative z-10 px-5 py-2 text-xs font-bold transition-colors duration-200 text-white flex items-center gap-2" data-nav="hero">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Beranda</span>
+                    </a>
+                    <a href="#products" class="liquid-nav-item relative z-10 px-5 py-2 text-xs font-bold transition-colors duration-200 text-slate-600 hover:text-pink-600 flex items-center gap-2" data-nav="products">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Menu Produk</span>
+                    </a>
+                </nav>
+
+                <!-- WhatsApp Direct Contact -->
+                <div class="flex items-center gap-2">
+                    <a href="https://wa.me/6285775271829?text=Hai%20kakk%20ak%20mw%20nanya nanya%20dulu%20boleh?" 
+                       target="_blank" 
+                       class="inline-flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full font-bold text-xs transition-all shadow-sm active:scale-95">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span class="hidden sm:inline">Contact</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Floating Liquid Navigation Dock -->
+        <div class="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-xs">
+            <div class="relative bg-white/85 backdrop-blur-xl border border-pink-200/80 p-1 rounded-full shadow-lg shadow-pink-200/50 flex items-center justify-around" id="mobile-liquid-nav">
+                <!-- Mobile Liquid Indicator Pill -->
+                <div id="mobile-liquid-pill" class="absolute top-1 bottom-1 bg-pink-500 rounded-full transition-all duration-300 ease-out shadow-sm pointer-events-none"></div>
+
+                <a href="#hero" class="mobile-liquid-item relative z-10 flex-1 py-2 text-center text-xs font-bold text-white flex flex-col items-center gap-0.5 transition-colors duration-200" data-nav="hero">
+                    <i class="fa-solid fa-house text-sm"></i>
+                    <span class="text-[10px]">Beranda</span>
+                </a>
+                <a href="#products" class="mobile-liquid-item relative z-10 flex-1 py-2 text-center text-xs font-bold text-slate-600 flex flex-col items-center gap-0.5 transition-colors duration-200" data-nav="products">
+                    <i class="fa-solid fa-store text-sm"></i>
+                    <span class="text-[10px]">Menu</span>
+                </a>
+                <a href="https://wa.me/6285775271829" target="_blank" class="relative z-10 flex-1 py-2 text-center text-xs font-bold text-emerald-600 flex flex-col items-center gap-0.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span class="text-[10px]">WhatsApp</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- HERO BANNER SECTION -->
+        <section id="hero" class="relative overflow-hidden py-12 md:py-20 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Hero Left Text Content -->
+                    <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-pink-200 shadow-sm text-xs font-semibold text-pink-600">
+                            <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+                            <span>FA Bites Toko kecil kecilan Pree Order</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight">
+                            Pengen makan tapi mau yg murah? langsung aja di <span class="text-pink-600 underline decoration-pink-300 decoration-wavy underline-offset-8">FA Bites</span>
+                        </h1>
+
+                        <p class="text-sm sm:text-base text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                            Makanan enak harga pelajar, bisa Pre Order juga 100% Higenis
+                        </p>
+
+                        <!-- Action Buttons & Badges -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
+                            <a href="#products" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm shadow-sm hover:shadow-md transition-all transform active:scale-95">
+                                <i class="fa-solid fa-utensils"></i>
+                                <span>Lihat Menu Pre-Order</span>
+                            </a>
+                            <a href="https://wa.me/6285775271829?text=Hai%20kakk%20ak%20mw%20nanya nanya%20dulu%20boleh?" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-pink-50 text-pink-700 font-bold text-sm border border-pink-200 shadow-sm transition-all">
+                                <i class="fa-brands fa-whatsapp text-emerald-500"></i>
+                                <span>WhatsApp</span>
+                            </a>
+                        </div>
+
+                        <!-- Trust Features Grid -->
+                        <div class="pt-6 border-t border-pink-200/60 grid grid-cols-3 gap-2 max-w-md mx-auto lg:mx-0 text-center">
+                            <div class="p-2">
+                                <div class="text-pink-600 mb-1"><i class="fa-solid fa-shield-heart text-lg"></i></div>
+                                <div class="text-xs font-bold text-slate-700">100% Higienis</div>
+                            </div>
+                            <div class="p-2 border-x border-pink-200/60">
+                                <div class="text-pink-600 mb-1"><i class="fa-solid fa-truck-fast text-lg"></i></div>
+                                <div class="text-xs font-bold text-slate-700">Cepet & Fresh</div>
+                            </div>
+                            <div class="p-2">
+                                <div class="text-pink-600 mb-1"><i class="fa-solid fa-thumbs-up text-lg"></i></div>
+                                <div class="text-xs font-bold text-slate-700">Rasa jan ditanya</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Right Image Showcase -->
+                    <div class="lg:col-span-5 flex justify-center">
+                        <div class="relative w-full max-w-sm">
+                            <!-- Background Frame Accent -->
+                            <div class="absolute -inset-2 bg-gradient-to-r from-pink-200 to-pink-300 rounded-3xl transform rotate-2"></div>
+                            
+                            <!-- Main Hero Card Image -->
+                            <div class="relative bg-white p-4 rounded-3xl border border-pink-100 shadow-sm">
+                                <div class="relative aspect-square overflow-hidden rounded-2xl">
+                                    <img src="https://files.catbox.moe/tyjzst.jpeg" 
+                                         alt="FA Bites Banner Showcase" 
+                                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                                         onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=FA+Bites'">
+                                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-pink-200 text-xs font-bold text-pink-600 shadow-sm flex items-center gap-1">
+                                        <i class="fa-solid fa-fire text-amber-500"></i> Best Seller
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 text-center">
+                                    <div class="text-xs font-semibold text-pink-500 uppercase tracking-wider">FA Bites</div>
+                                    <div class="text-base font-bold text-slate-800">Camilan enak harga juga enak</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTS SECTION -->
+        <section id="products" class="py-12 bg-white/60 border-y border-pink-100 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-bag-shopping"></i> Menu FA Bites
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">Pilihan Produk Pre Order</h2>
+                    <p class="text-xs sm:text-sm text-slate-500">Klik tombol "Pre Order" untuk langsung memesan ke WhatsApp secara otomatis.</p>
+                </div>
+
+                <!-- Ultra Modern Search Bar & Category Filter Bar Controls -->
+                <div class="space-y-4 mb-8">
+                    <!-- Modern Search Box -->
+                    <div class="relative max-w-xl mx-auto">
+                        <div class="relative flex items-center bg-white/90 backdrop-blur-md rounded-2xl p-1.5 border border-pink-200/80 shadow-sm focus-within:border-pink-400 focus-within:ring-2 focus-within:ring-pink-200 transition-all duration-300 group">
+                            <!-- Animated Search Icon Container -->
+                            <div class="w-10 h-10 rounded-xl bg-pink-50 group-focus-within:bg-pink-500 group-focus-within:text-white text-pink-500 flex items-center justify-center transition-colors duration-300 ml-0.5 shrink-0">
+                                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                            </div>
+
+                            <!-- Search Input Field -->
+                            <input type="text" 
+                                   id="product-search" 
+                                   placeholder="Search Product yg diinginkan Misalkan.." 
+                                   class="w-full bg-transparent px-3.5 py-2 text-xs sm:text-sm text-slate-700 placeholder-slate-400 focus:outline-none font-medium">
+
+                            <!-- Clear Button -->
+                            <button id="search-clear-btn" 
+                                    class="hidden mr-2 w-7 h-7 rounded-full text-slate-400 hover:text-pink-600 hover:bg-pink-100 flex items-center justify-center transition-all text-xs"
+                                    aria-label="Clear search">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+
+                            <!-- Modern Badge -->
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-pink-50 border border-pink-100 text-[10px] font-bold text-pink-400 mr-1.5 shrink-0">
+                                <i class="fa-solid fa-bolt text-[9px]"></i> Instant Search
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex items-center justify-center gap-2 overflow-x-auto w-full pb-2 scrollbar-none">
+                        <button class="category-btn active border px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap bg-pink-500 text-white border-pink-500 shadow-sm" data-category="all">
+                            <i class="fa-solid fa-border-all mr-1"></i> Semua Menu
+                        </button>
+                        <button class="category-btn border px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap bg-white text-slate-600 border-pink-200 hover:border-pink-300 hover:bg-pink-50" data-category="favorite">
+                            <i class="fa-solid fa-heart text-pink-400 mr-1"></i> Favorite
+                        </button>
+                        <button class="category-btn border px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap bg-white text-slate-600 border-pink-200 hover:border-pink-300 hover:bg-pink-50" data-category="bestseller">
+                            <i class="fa-solid fa-fire text-amber-500 mr-1"></i> Best Seller
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Grid (5 Defined Items) -->
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Product 1: Churoos -->
+                    <div class="product-card bg-white rounded-3xl p-4 border border-pink-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-name="Churoos" data-category="favorite">
+                        <div>
+                            <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-pink-50">
+                                <img src="https://files.catbox.moe/tyjzst.jpeg" alt="Churoos" class="w-full h-full object-cover rounded-2xl transition-transform duration-300 hover:scale-105" onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=Churoos'">
+                                <span class="absolute top-2.5 left-2.5 bg-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Favorite</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-pink-500 font-semibold mb-1">
+                                <span><i class="fa-solid fa-heart"></i> Favorite</span>
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="text-slate-600 text-[11px] font-bold">5.0</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Churoos</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">Churros renyah di luar, lembut di dalam dengan taburan gula kayu manis dan saus manis premium.</p>
+                        </div>
+                        <div>
+                            <div class="pt-2 border-t border-pink-50 flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-400 font-medium">Harga:</span>
+                                <span class="text-base font-extrabold text-pink-700">Rp 1.000.000</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openProductModal('Churoos', 'Rp 1.000.000', 'Churros renyah khas FA Bites dipadu topping manis pilihan.', 'https://files.catbox.moe/tyjzst.jpeg')" class="col-span-1 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-2xl p-2.5 flex items-center justify-center transition-colors" title="Quick View">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                                <a href="https://wa.me/6285775271829?text=woii%20gw%20mau%20po%20yg%20Churoos%20donng" target="_blank" class="col-span-3 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pre Order</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 2: Mie Geprek -->
+                    <div class="product-card bg-white rounded-3xl p-4 border border-pink-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-name="Mie Geprek" data-category="favorite">
+                        <div>
+                            <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-pink-50">
+                                <img src="https://files.catbox.moe/tyjzst.jpeg" alt="Mie Geprek" class="w-full h-full object-cover rounded-2xl transition-transform duration-300 hover:scale-105" onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=Mie+Geprek'">
+                                <span class="absolute top-2.5 left-2.5 bg-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Favorite</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-pink-500 font-semibold mb-1">
+                                <span><i class="fa-solid fa-heart"></i> Favorite</span>
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="text-slate-600 text-[11px] font-bold">4.9</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Mie Geprek</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">Mie gurih pedas nampol dipadu dengan ulekan sambal geprek gurih mantap khas FA Bites.</p>
+                        </div>
+                        <div>
+                            <div class="pt-2 border-t border-pink-50 flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-400 font-medium">Harga:</span>
+                                <span class="text-base font-extrabold text-pink-700">Rp 9.000</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openProductModal('Mie Geprek', 'Rp 9.000', 'Mie gurih lezat dipadu cabai geprek segar yang menggugah selera.', 'https://files.catbox.moe/tyjzst.jpeg')" class="col-span-1 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-2xl p-2.5 flex items-center justify-center transition-colors" title="Quick View">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                                <a href="https://wa.me/6285775271829?text=woii%20gw%20mau%20po%20yg%20Mie%20Geprek%20donng" target="_blank" class="col-span-3 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pre Order</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3: Dubai Ciwi Kuki -->
+                    <div class="product-card bg-white rounded-3xl p-4 border border-pink-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-name="Dubai Ciwi Kuki" data-category="favorite">
+                        <div>
+                            <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-pink-50">
+                                <img src="https://files.catbox.moe/tyjzst.jpeg" alt="Dubai Ciwi Kuki" class="w-full h-full object-cover rounded-2xl transition-transform duration-300 hover:scale-105" onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=Dubai+Ciwi+Kuki'">
+                                <span class="absolute top-2.5 left-2.5 bg-pink-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Favorite</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-pink-500 font-semibold mb-1">
+                                <span><i class="fa-solid fa-heart"></i> Favorite</span>
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="text-slate-600 text-[11px] font-bold">5.0</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Dubai Ciwi Kuki</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">Cookies lembut chewy dengan varian isian ala Dubai chocolate melt & pistachio lembut.</p>
+                        </div>
+                        <div>
+                            <div class="pt-2 border-t border-pink-50 flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-400 font-medium">Harga:</span>
+                                <span class="text-base font-extrabold text-pink-700">Rp 10.000</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openProductModal('Dubai Ciwi Kuki', 'Rp 10.000', 'Cookie super empuk dengan lumeran cokelat mewah khas ciwi Dubai.', 'https://files.catbox.moe/tyjzst.jpeg')" class="col-span-1 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-2xl p-2.5 flex items-center justify-center transition-colors" title="Quick View">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                                <a href="https://wa.me/6285775271829?text=woii%20gw%20mau%20po%20yg%20Dubai%20Ciwi%20Kuki%20donng" target="_blank" class="col-span-3 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pre Order</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4: Pipi Gemoy Wafiq -->
+                    <div class="product-card bg-white rounded-3xl p-4 border border-pink-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-name="Pipi Gemoy Wafiq" data-category="bestseller">
+                        <div>
+                            <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-pink-50">
+                                <img src="https://files.catbox.moe/tyjzst.jpeg" alt="Pipi Gemoy Wafiq" class="w-full h-full object-cover rounded-2xl transition-transform duration-300 hover:scale-105" onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=Pipi+Gemoy'">
+                                <span class="absolute top-2.5 left-2.5 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Best Seller</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-amber-500 font-semibold mb-1">
+                                <span><i class="fa-solid fa-fire"></i> Best Seller</span>
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="text-slate-600 text-[11px] font-bold">5.0</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Pipi Gemoy Wafiq</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">Item eksklusif gemoy tak ternilai harganya khusus untuk penikmat keimutan tingkat tinggi.</p>
+                        </div>
+                        <div>
+                            <div class="pt-2 border-t border-pink-50 flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-400 font-medium">Harga:</span>
+                                <span class="text-sm font-extrabold text-pink-700 break-all">Rp 999.999.999.999</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openProductModal('Pipi Gemoy Wafiq', 'Rp 999.999.999.999', 'Spesial item super eksklusif tak tertandingi di toko FA Bites.', 'https://files.catbox.moe/tyjzst.jpeg')" class="col-span-1 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-2xl p-2.5 flex items-center justify-center transition-colors" title="Quick View">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                                <a href="https://wa.me/6285775271829?text=woii%20gw%20mau%20po%20yg%20Pipi%20Gemoy%20Wafiq%20donng" target="_blank" class="col-span-3 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pre Order</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 5: Gatau cuk -->
+                    <div class="product-card bg-white rounded-3xl p-4 border border-pink-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-name="Gatau cuk" data-category="bestseller">
+                        <div>
+                            <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-pink-50">
+                                <img src="https://files.catbox.moe/tyjzst.jpeg" alt="Gatau cuk" class="w-full h-full object-cover rounded-2xl transition-transform duration-300 hover:scale-105" onerror="this.src='https://placehold.co/400x400/ffe4e1/db2777?text=Gatau+cuk'">
+                                <span class="absolute top-2.5 left-2.5 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Best Seller</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-amber-500 font-semibold mb-1">
+                                <span><i class="fa-solid fa-fire"></i> Best Seller</span>
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="text-slate-600 text-[11px] font-bold">4.8</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Gatau cuk</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-3">Menu rahasia misterius yang bikin penasaran tapi dijamin rasanya tetep bikin ketagihan.</p>
+                        </div>
+                        <div>
+                            <div class="pt-2 border-t border-pink-50 flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-400 font-medium">Harga:</span>
+                                <span class="text-base font-extrabold text-pink-700">Rp 5.000</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openProductModal('Gatau cuk', 'Rp 5.000', 'Menu misteri terjangkau dari FA Bites untuk Anda yang suka kejutan rasa.', 'https://files.catbox.moe/tyjzst.jpeg')" class="col-span-1 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-2xl p-2.5 flex items-center justify-center transition-colors" title="Quick View">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                                <a href="https://wa.me/6285775271829?text=woii%20gw%20mau%20po%20yg%20Gatau%20cuk%20donng" target="_blank" class="col-span-3 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>Pre Order</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Empty State Search Result -->
+                <div id="no-products-msg" class="hidden text-center py-12">
+                    <div class="w-16 h-16 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-700 mb-1">Produk Tidak Ditemukan</h3>
+                    <p class="text-xs text-slate-500">Coba kata kunci lain atau pilih kategori yang sesuai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER SECTION -->
+        <footer class="mt-auto bg-white border-t border-pink-200 pt-10 pb-6 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                    
+                    <!-- Brand Column -->
+                    <div class="md:col-span-2 space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <img src="https://files.catbox.moe/tyjzst.jpeg" alt="FA Bites" class="w-10 h-10 rounded-full object-cover border border-pink-300">
+                            <span class="text-xl font-bold text-pink-700">FA Bites</span>
+                        </div>
+                        <p class="text-xs text-slate-500 max-w-sm leading-relaxed">
+                            Toko FA Bites sajiin aneka jajanan dan makanan dengan kualitas terbaik. Pesan langsung via WhatsApp
+                        </p>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Navigasi</h4>
+                        <ul class="space-y-1.5 text-xs text-slate-600">
+                            <li><a href="#hero" class="hover:text-pink-600 transition-colors">Beranda</a></li>
+                            <li><a href="#products" class="hover:text-pink-600 transition-colors">Menu Pre Order</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Details -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Kontak</h4>
+                        <div class="space-y-2 text-xs text-slate-600">
+                            <a href="https://wa.me/6285775271829" target="_blank" class="flex items-center gap-2 hover:text-pink-600">
+                                <i class="fa-brands fa-whatsapp text-emerald-500 text-sm"></i>
+                                <span>+62 857-7527-1829</span>
+                            </a>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-location-dot text-pink-400 text-sm"></i>
+                                <span>Indonesia</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="pt-6 border-t border-pink-100 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+                    <div>&copy; 2026 <span class="font-bold text-pink-600">FA Bites</span>. FiqRor-1945</div>
+                    <div class="flex items-center gap-1 text-pink-400">
+                        <span>Made with</span>
+                        <i class="fa-solid fa-heart text-pink-500 text-[10px]"></i>
+                        <span>for sweet bites</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- FLOATING WHATSAPP BUTTON (Quick Contact) -->
+        <a href="https://wa.me/6285775271829?text=hai%20kakk%20mau%20tanya-tanya%20menu%20dong" 
+           target="_blank" 
+           class="fixed bottom-6 right-6 z-30 bg-emerald-500 text-white p-3.5 rounded-full shadow-lg hover:bg-emerald-600 transition-all transform hover:scale-110 flex items-center justify-center group"
+           aria-label="Contact WhatsApp">
+            <i class="fa-brands fa-whatsapp text-2xl"></i>
+            <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-bold px-0 group-hover:px-2">
+                Chat WA
+            </span>
+        </a>
+
+    </div>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 border border-pink-100 shadow-xl relative animate-float-none">
+            <!-- Close Button -->
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 flex items-center justify-center text-xs font-bold transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Content -->
+            <div class="text-center space-y-4">
+                <div class="w-32 h-32 mx-auto rounded-2xl overflow-hidden border-2 border-pink-200">
+                    <img id="modal-img" src="" alt="Product Detail" class="w-full h-full object-cover">
+                </div>
+
+                <div>
+                    <span id="modal-badge" class="inline-block px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 text-[10px] font-bold uppercase mb-1">
+                        Menu Detail
+                    </span>
+                    <h3 id="modal-title" class="text-xl font-bold text-slate-800"></h3>
+                    <div id="modal-price" class="text-lg font-extrabold text-pink-600 mt-1"></div>
+                </div>
+
+                <p id="modal-desc" class="text-xs text-slate-500 leading-relaxed bg-pink-50/50 p-3 rounded-2xl border border-pink-100"></p>
+
+                <!-- Action Direct WA -->
+                <a id="modal-wa-btn" href="#" target="_blank" class="w-full inline-flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl py-3 px-4 text-xs font-bold transition-all shadow-sm">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Pre Order via WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLLERS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. 5-SECOND LOADING TIMER & COUNTER LOGIC
+            const loadingScreen = document.getElementById('loading-screen');
+            const appContent = document.getElementById('app-content');
+            const loadingCounter = document.getElementById('loading-counter');
+            
+            let count = 0;
+            const duration = 5000; // 5 Seconds exact requirement
+            const intervalTime = 50; 
+            const increment = 100 / (duration / intervalTime);
+
+            const timer = setInterval(() => {
+                count += increment;
+                if (count >= 100) {
+                    count = 100;
+                    clearInterval(timer);
+                    
+                    // Hide loading screen smoothly after 5s
+                    loadingScreen.classList.add('opacity-0');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        appContent.classList.remove('opacity-0');
+                    }, 700);
+                }
+                loadingCounter.textContent = Math.round(count) + '%';
+            }, intervalTime);
+
+            // 2. MOBILE MENU TOGGLE
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+
+            // 3. PRODUCT SEARCH FILTERING
+            const searchInput = document.getElementById('product-search');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+            const productCards = document.querySelectorAll('.product-card');
+            const noProductsMsg = document.getElementById('no-products-msg');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const query = e.target.value.toLowerCase().trim();
+                    let hasVisible = false;
+
+                    if (searchClearBtn) {
+                        if (query.length > 0) {
+                            searchClearBtn.classList.remove('hidden');
+                        } else {
+                            searchClearBtn.classList.add('hidden');
+                        }
+                    }
+
+                    productCards.forEach(card => {
+                        const productName = card.getAttribute('data-name').toLowerCase();
+                        if (productName.includes(query)) {
+                            card.style.display = 'flex';
+                            hasVisible = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    if (noProductsMsg) {
+                        if (!hasVisible) {
+                            noProductsMsg.classList.remove('hidden');
+                        } else {
+                            noProductsMsg.classList.add('hidden');
+                        }
+                    }
+                });
+
+                if (searchClearBtn) {
+                    searchClearBtn.addEventListener('click', function() {
+                        searchInput.value = '';
+                        searchInput.dispatchEvent(new Event('input'));
+                        searchInput.focus();
+                    });
+                }
+            }
+
+            // 4. CATEGORY FILTER PILLS
+            const categoryBtns = document.querySelectorAll('.category-btn');
+
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    categoryBtns.forEach(b => {
+                        b.classList.remove('bg-pink-500', 'text-white', 'border-pink-500');
+                        b.classList.add('bg-white', 'text-slate-600', 'border-pink-200');
+                    });
+
+                    this.classList.remove('bg-white', 'text-slate-600', 'border-pink-200');
+                    this.classList.add('bg-pink-500', 'text-white', 'border-pink-500');
+
+                    const category = this.getAttribute('data-category');
+                    let hasVisible = false;
+
+                    productCards.forEach(card => {
+                        const cardCategory = card.getAttribute('data-category');
+                        if (category === 'all' || cardCategory === category) {
+                            card.style.display = 'flex';
+                            hasVisible = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    if (noProductsMsg) {
+                        if (!hasVisible) {
+                            noProductsMsg.classList.remove('hidden');
+                        } else {
+                            noProductsMsg.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+
+        // 5. PRODUCT QUICK VIEW MODAL FUNCTIONS
+        function openProductModal(title, price, desc, imgSrc) {
+            const modal = document.getElementById('product-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-price').textContent = price;
+            document.getElementById('modal-desc').textContent = desc;
+            document.getElementById('modal-img').src = imgSrc;
+
+            // Generate precise WA link required
+            const waText = encodeURIComponent(`woii gw mau po yg ${title} donng`);
+            const waUrl = `https://wa.me/6285775271829?text=${waText}`;
+            document.getElementById('modal-wa-btn').href = waUrl;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        // 6. LIQUID NAVIGATION CONTROLLER
+        function updateLiquidPill(targetLink, containerId, pillId) {
+            const container = document.getElementById(containerId);
+            const pill = document.getElementById(pillId);
+            if (!container || !pill || !targetLink) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const linkRect = targetLink.getBoundingClientRect();
+
+            pill.style.width = `${linkRect.width}px`;
+            pill.style.left = `${linkRect.left - containerRect.left}px`;
+        }
+
+        function initLiquidNav() {
+            const desktopItems = document.querySelectorAll('.liquid-nav-item');
+            const mobileItems = document.querySelectorAll('.mobile-liquid-item');
+
+            // Desktop Initial Setup
+            const activeDesktop = document.querySelector('.liquid-nav-item[data-nav="hero"]');
+            if (activeDesktop) updateLiquidPill(activeDesktop, 'liquid-nav-container', 'liquid-pill');
+
+            desktopItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    desktopItems.forEach(i => {
+                        i.classList.remove('text-white');
+                        i.classList.add('text-slate-600');
+                    });
+                    this.classList.remove('text-slate-600');
+                    this.classList.add('text-white');
+                    updateLiquidPill(this, 'liquid-nav-container', 'liquid-pill');
+                });
+            });
+
+            // Mobile Initial Setup
+            const activeMobile = document.querySelector('.mobile-liquid-item[data-nav="hero"]');
+            if (activeMobile) updateLiquidPill(activeMobile, 'mobile-liquid-nav', 'mobile-liquid-pill');
+
+            mobileItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    mobileItems.forEach(i => {
+                        i.classList.remove('text-white');
+                        i.classList.add('text-slate-600');
+                    });
+                    this.classList.remove('text-slate-600');
+                    this.classList.add('text-white');
+                    updateLiquidPill(this, 'mobile-liquid-nav', 'mobile-liquid-pill');
+                });
+            });
+
+            // Auto-recalculate position on window resize
+            window.addEventListener('resize', () => {
+                const currentDesktop = document.querySelector('.liquid-nav-item.text-white') || activeDesktop;
+                const currentMobile = document.querySelector('.mobile-liquid-item.text-white') || activeMobile;
+                if (currentDesktop) updateLiquidPill(currentDesktop, 'liquid-nav-container', 'liquid-pill');
+                if (currentMobile) updateLiquidPill(currentMobile, 'mobile-liquid-nav', 'mobile-liquid-pill');
+            });
+        }
+
+        // Initialize liquid pill position right after loading animation ends
+        setTimeout(initLiquidNav, 5100);
+
+        // Close modal when clicking outside box
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('product-modal');
+            if (e.target === modal) {
+                closeProductModal();
+            }
+        });
+    </script>
+
+</body>
+</html>
